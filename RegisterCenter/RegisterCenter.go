@@ -7,6 +7,7 @@ import (
 	"github.com/emirpasic/gods/maps/hashmap"
 	"gopkg.in/ini.v1"
 	"net"
+	"runtime"
 )
 
 var (
@@ -148,6 +149,8 @@ func startRegisterCenter()  {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	log.Info("Hello World")
 
 	startRegisterCenter()

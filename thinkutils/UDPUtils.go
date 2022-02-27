@@ -14,9 +14,13 @@ var (
 	g_mapUDPClient  map[string]*net.UDPConn
 )
 
-func (this udputils) makeUDPClient(szIP string, nPort int) *net.UDPConn {
+func (this udputils) MakeUDPClient(szIP string, nPort int) *net.UDPConn {
 	defer g_lockUDPClient.Unlock()
 	g_lockUDPClient.Lock()
+
+	if nil == g_mapUDPClient {
+		g_mapUDPClient = make(map[string]*net.UDPConn)
+	}
 
 	szConn := fmt.Sprintf("%s:%d", szIP, nPort)
 	pConn := g_mapUDPClient[szConn]
@@ -47,7 +51,7 @@ func (this udputils) Send(szIP string, nPort int, data []byte) {
 		szConn := fmt.Sprintf("%s:%d", szIP, nPort)
 		pConn := g_mapUDPClient[szConn]
 		if nil == pConn {
-			pConn = this.makeUDPClient(szIP, nPort)
+			pConn = this.MakeUDPClient(szIP, nPort)
 		}
 
 		if nil == pConn {
