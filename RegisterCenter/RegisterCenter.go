@@ -20,7 +20,7 @@ type ServerNode struct {
 	Host string `json:"host"`
 	Port int32 `json:"port"`
 	AppId uint64 `json:"appid"`
-	Heartbeat uint64 `json:"heartbeat"`
+	Heartbeat uint64 `json:"-"`
 }
 
 type RegisterCenter struct {
@@ -48,7 +48,15 @@ func (this *RegisterCenter) Init()  {
 }
 
 func (this *RegisterCenter) onTimeout(conn interface{}) {
+	if nil == conn {
+		return
+	}
+
 	pNode := conn.(*ServerNode)
+	if nil == pNode {
+		return
+	}
+
 	log.Info("%s", thinkutils.JSONUtils.ToJson(pNode))
 
 	log.Info(this.serverInfo())
@@ -114,7 +122,16 @@ func (this *RegisterCenter) OnMsg(addr net.Addr, data []byte) {
 }
 
 func (this *RegisterCenter) replyMsg(serverType string) string {
-	return "FXXK"
+	szRet := ""
+	if SERVER_MAIN == serverType {
+		szRet = fmt.Sprintf("%s", thinkutils.JSONUtils.ToJson(this.m_mapGameServer.Values()))
+	} else if SERVER_GAME == serverType {
+		szRet = fmt.Sprintf("%s", thinkutils.JSONUtils.ToJson(this.m_mapMainServer.Values()))
+	} else {
+		szRet = ""
+	}
+
+	return szRet
 }
 
 func startRegisterCenter()  {
