@@ -27,6 +27,10 @@ func (this *UDPHeartbeat) heartbeat()  {
 		cfg.Section("register_center").Key("udp_port").MustInt(8083),
 		thinkutils.StringUtils.StringToBytes(szMsg))
 
+	if nil == pConn {
+		return
+	}
+
 	buf := make([]byte, 256)
 	n, addr, err := pConn.ReadFromUDP(buf)
 	if err != nil {
