@@ -144,7 +144,7 @@ func startRegisterCenter()  {
 	center.Init()
 
 	pServer := &thinkutils.UDPServer{OnMsg: center.OnMsg}
-	pServer.Start(cfg.Section("register_center").Key("server_port").MustInt())
+	pServer.Start(cfg.Section("register_center").Key("udp_port").MustInt())
 }
 
 func main() {
