@@ -48,8 +48,24 @@ func (this *RegisterCenter) Init()  {
 }
 
 func (this *RegisterCenter) onTimeout(conn interface{}) {
-	log.Info("%s", thinkutils.JSONUtils.ToJson(conn.(*ServerNode)))
+	pNode := conn.(*ServerNode)
+	log.Info("%s", thinkutils.JSONUtils.ToJson(pNode))
 
+	log.Info(this.serverInfo())
+	szKey := fmt.Sprintf("%s:%d", pNode.Host, pNode.Port)
+	if SERVER_MAIN == pNode.Type {
+		this.m_mapMainServer.Remove(szKey)
+	} else if SERVER_GAME == pNode.Type {
+		this.m_mapGameServer.Remove(szKey)
+	} else {
+		return
+	}
+	log.Info(this.serverInfo())
+}
+
+func (this *RegisterCenter) serverInfo() string {
+	szInfo := fmt.Sprintf("Main Server: %d Game Server: %d", this.m_mapMainServer.Size(), this.m_mapGameServer.Size())
+	return szInfo
 }
 
 //{"type": "main/game", "port": 8084, "appid": 1}
@@ -58,12 +74,12 @@ func (this *RegisterCenter) OnMsg(addr net.Addr, data []byte) {
 
 	_pNode := &ServerNode{}
 	err := thinkutils.JSONUtils.FromJson(thinkutils.StringUtils.BytesToString(data), _pNode)
-
 	if err != nil || nil == _pNode {
 		return
 	}
 
-	szKey := fmt.Sprint("%s:%d", _pNode.Host, _pNode.Port)
+	_pNode.Host = addr.(*net.UDPAddr).IP.String()
+	szKey := fmt.Sprintf("%s:%d", _pNode.Host, _pNode.Port)
 
 	if SERVER_MAIN == _pNode.Type {
 		pNode, bFound := this.m_mapMainServer.Get(szKey)
@@ -77,7 +93,7 @@ func (this *RegisterCenter) OnMsg(addr net.Addr, data []byte) {
 			this.m_mapMainServer.Put(szKey, _pNode)
 			this.m_pHeartbeatMgr.Update(pNode)
 		}
-	} else {
+	} else if SERVER_GAME == _pNode.Type {
 		pNode, bFound := this.m_mapGameServer.Get(szKey)
 		if bFound {
 			_pNode = pNode.(*ServerNode)
@@ -88,6 +104,8 @@ func (this *RegisterCenter) OnMsg(addr net.Addr, data []byte) {
 
 			this.m_mapGameServer.Put(szKey, _pNode)
 		}
+	} else {
+		return
 	}
 
 	this.m_pHeartbeatMgr.Update(_pNode)
