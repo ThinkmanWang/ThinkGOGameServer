@@ -42,31 +42,30 @@ func (this udputils) MakeUDPClient(szIP string, nPort int) *net.UDPConn {
 	return pConn
 }
 
-func (this udputils) Send(szIP string, nPort int, data []byte) {
-	go func() {
-		if nil == g_mapUDPClient {
-			g_mapUDPClient = make(map[string]*net.UDPConn)
-		}
+func (this udputils) Send(szIP string, nPort int, data []byte) *net.UDPConn {
+	if nil == g_mapUDPClient {
+		g_mapUDPClient = make(map[string]*net.UDPConn)
+	}
 
-		szConn := fmt.Sprintf("%s:%d", szIP, nPort)
-		pConn := g_mapUDPClient[szConn]
-		if nil == pConn {
-			pConn = this.MakeUDPClient(szIP, nPort)
-		}
+	szConn := fmt.Sprintf("%s:%d", szIP, nPort)
+	pConn := g_mapUDPClient[szConn]
+	if nil == pConn {
+		pConn = this.MakeUDPClient(szIP, nPort)
+	}
 
-		if nil == pConn {
-			return
-		}
+	if nil == pConn {
+		return pConn
+	}
 
-		log.Info("%p", pConn)
-		_, err := pConn.Write(data)
-		if err != nil {
-			pConn.Close()
-			delete(g_mapUDPClient, szConn)
-			return
-		}
-	}()
+	log.Info("%p", pConn)
+	_, err := pConn.Write(data)
+	if err != nil {
+		pConn.Close()
+		delete(g_mapUDPClient, szConn)
+		return pConn
+	}
 
+	return pConn
 }
 
 type OnUDPMsgCallback func(pConn *net.UDPConn, addr net.Addr, data []byte)

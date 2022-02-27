@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/emirpasic/gods/maps/hashmap"
 	"gopkg.in/ini.v1"
-	"net"
 	"time"
 )
 
@@ -23,30 +22,16 @@ func (this *UDPHeartbeat) heartbeat()  {
 		return
 	}
 
-	serverAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", cfg.Section("register_center").Key("host").String(), cfg.Section("register_center").Key("udp_port").MustInt(8083)))
-	if err != nil {
-		return
-	}
-
-	localAddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")
-	if err != nil {
-		return
-	}
-
-	pConn, err := net.DialUDP("udp", localAddr, serverAddr)
-	if err != nil {
-		return
-	}
-	defer pConn.Close()
-
 	szMsg := fmt.Sprintf(`{"type": "main", "port": %d}`, cfg.Section("main_server").Key("udp_port").MustInt(8084))
-	_, err = pConn.Write(thinkutils.StringUtils.StringToBytes(szMsg))
+	pConn := thinkutils.UDPUtils.Send(cfg.Section("register_center").Key("host").String(),
+		cfg.Section("register_center").Key("udp_port").MustInt(8083),
+		thinkutils.StringUtils.StringToBytes(szMsg))
+
+	buf := make([]byte, 256)
+	n, addr, err := pConn.ReadFromUDP(buf)
 	if err != nil {
 		return
 	}
-
-	buf := make([]byte, 1024)
-	n, addr, err := pConn.ReadFromUDP(buf)
 	fmt.Println("Received ", string(buf[0:n]), " from ", addr)
 }
 
