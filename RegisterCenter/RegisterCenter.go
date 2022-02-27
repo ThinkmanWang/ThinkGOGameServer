@@ -78,7 +78,7 @@ func (this *RegisterCenter) serverInfo() string {
 }
 
 //{"type": "main/game", "port": 8084, "appid": 1}
-func (this *RegisterCenter) OnMsg(addr net.Addr, data []byte) {
+func (this *RegisterCenter) OnMsg(pConn *net.UDPConn, addr net.Addr, data []byte) {
 	log.Info("<%s> %s", addr.(*net.UDPAddr).IP, thinkutils.StringUtils.BytesToString(data))
 
 	_pNode := &ServerNode{}
@@ -119,7 +119,16 @@ func (this *RegisterCenter) OnMsg(addr net.Addr, data []byte) {
 
 	this.m_pHeartbeatMgr.Update(_pNode)
 
-	thinkutils.UDPUtils.Send(addr.(*net.UDPAddr).IP.String(), addr.(*net.UDPAddr).Port, thinkutils.StringUtils.StringToBytes(this.replyMsg(_pNode.Type)))
+	//message := []byte("Hello UDP client!")
+	//_, err = pConn.WriteToUDP(message, addr.(*net.UDPAddr))
+	//if err != nil {
+	//	return
+	//}
+
+	_, err = pConn.WriteToUDP(thinkutils.StringUtils.StringToBytes(this.replyMsg(_pNode.Type)), addr.(*net.UDPAddr))
+	if err != nil {
+	}
+	//thinkutils.UDPUtils.Send(addr.(*net.UDPAddr).IP.String(), addr.(*net.UDPAddr).Port, thinkutils.StringUtils.StringToBytes(this.replyMsg(_pNode.Type)))
 }
 
 func (this *RegisterCenter) replyMsg(serverType string) string {

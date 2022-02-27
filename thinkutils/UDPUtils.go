@@ -69,7 +69,7 @@ func (this udputils) Send(szIP string, nPort int, data []byte) {
 
 }
 
-type OnUDPMsgCallback func(addr net.Addr, data []byte)
+type OnUDPMsgCallback func(pConn *net.UDPConn, addr net.Addr, data []byte)
 type UDPServer struct {
 	OnMsg OnUDPMsgCallback
 }
@@ -80,14 +80,14 @@ func (this *UDPServer) Start(nPort int) {
 
 func (this *UDPServer) StartEx(nPort int, bufSize uint32) {
 	ip := net.ParseIP("0.0.0.0")
-	listener, err := net.ListenUDP("udp", &net.UDPAddr{IP: ip, Port: nPort})
+	pConn, err := net.ListenUDP("udp", &net.UDPAddr{IP: ip, Port: nPort})
 	if err != nil {
 		return
 	}
 
 	for {
 		buf := make([]byte, bufSize)
-		nLen, remoteAddr, err := listener.ReadFrom(buf)
+		nLen, remoteAddr, err := pConn.ReadFrom(buf)
 		if err != nil {
 			log.Info(err.Error())
 			break
@@ -95,7 +95,7 @@ func (this *UDPServer) StartEx(nPort int, bufSize uint32) {
 
 		_buf := buf[:nLen]
 		if nil != this.OnMsg {
-			go this.OnMsg(remoteAddr, _buf)
+			go this.OnMsg(pConn, remoteAddr, _buf)
 		}
 		//log.Info("<%s> %s", remoteAddr, data[:n])
 	}
