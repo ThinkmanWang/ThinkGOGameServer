@@ -10,6 +10,8 @@ import (
 )
 
 type UDPHeartbeat struct {
+	Type string
+	Port uint32
 }
 
 var (
@@ -24,7 +26,7 @@ func (this *UDPHeartbeat) heartbeat()  {
 		return
 	}
 
-	szMsg := fmt.Sprintf(`{"type": "main", "port": %d}`, cfg.Section("main_server").Key("udp_port").MustInt(8084))
+	szMsg := fmt.Sprintf(`{"type": "%s", "port": %d}`, this.Type, this.Port)
 	pConn := thinkutils.UDPUtils.Send(cfg.Section("register_center").Key("host").String(),
 		cfg.Section("register_center").Key("udp_port").MustInt(8083),
 		thinkutils.StringUtils.StringToBytes(szMsg))
