@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ThinkGOGameServer/netutils"
 	"ThinkGOGameServer/thinkutils/logger"
 	"runtime"
 	"sync"
@@ -14,7 +15,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	log.Info("Hello World")
 
-	pUDPHeartbeat := &UDPHeartbeat{}
+	pUDPHeartbeat := &netutils.UDPHeartbeat{}
 	go pUDPHeartbeat.Init()
 
 	wg := sync.WaitGroup{}

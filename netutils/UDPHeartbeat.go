@@ -1,10 +1,11 @@
-package main
+package netutils
 
 import (
 	"ThinkGOGameServer/thinkutils"
 	"fmt"
 	"github.com/emirpasic/gods/maps/hashmap"
 	"gopkg.in/ini.v1"
+	"ThinkGOGameServer/thinkutils/logger"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type UDPHeartbeat struct {
 
 var (
 	g_mapServer *hashmap.Map
+	log *logger.LocalLogger = logger.DefaultLogger()
 )
 
 func (this *UDPHeartbeat) heartbeat()  {
