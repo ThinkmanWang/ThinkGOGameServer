@@ -1,17 +1,17 @@
-package netutils
+package serversdk
 
 import (
+	"ThinkGOGameServer/serversdk"
 	"ThinkGOGameServer/thinkutils"
+	"ThinkGOGameServer/thinkutils/logger"
 	"fmt"
 	"github.com/emirpasic/gods/maps/hashmap"
 	"gopkg.in/ini.v1"
-	"ThinkGOGameServer/thinkutils/logger"
 	"time"
 )
 
 type UDPHeartbeat struct {
-	Type string
-	Port uint32
+	ServerInfo serversdk.GameServerInfo
 }
 
 var (
@@ -26,7 +26,7 @@ func (this *UDPHeartbeat) heartbeat()  {
 		return
 	}
 
-	szMsg := fmt.Sprintf(`{"type": "%s", "port": %d}`, this.Type, this.Port)
+	szMsg := thinkutils.JSONUtils.ToJson(this.ServerInfo)
 	pConn := thinkutils.UDPUtils.Send(cfg.Section("register_center").Key("host").String(),
 		cfg.Section("register_center").Key("udp_port").MustInt(8083),
 		thinkutils.StringUtils.StringToBytes(szMsg))

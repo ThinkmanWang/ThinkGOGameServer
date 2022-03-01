@@ -1,7 +1,8 @@
 package main
 
 import (
-	"ThinkGOGameServer/netutils"
+	serversdk2 "ThinkGOGameServer/serversdk"
+	serversdk "ThinkGOGameServer/serversdk/netutils"
 	"ThinkGOGameServer/thinkutils/logger"
 	"gopkg.in/ini.v1"
 	"runtime"
@@ -22,10 +23,12 @@ func main() {
 		return
 	}
 
-	pUDPHeartbeat := &netutils.UDPHeartbeat{
-		Type: "main",
-		Port: uint32(cfg.Section("main_server").Key("udp_port").MustUint(8084)),
+	pUDPHeartbeat := &serversdk.UDPHeartbeat{
+		ServerInfo: serversdk2.GameServerInfo{AppId: 0,
+			Type: "main",
+			Port: uint32(cfg.Section("main_server").Key("udp_port").MustUint(8084))},
 	}
+
 	go pUDPHeartbeat.Init()
 
 	wg := sync.WaitGroup{}
