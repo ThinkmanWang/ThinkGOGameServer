@@ -64,9 +64,9 @@ func (this *UDPHeartbeat) updateServer(lstServer []ServerNode)  {
 			lstNode := arraylist.New()
 			g_mapServer.Put(item.Type, lstNode)
 
-			lstNode.Add(item)
+			lstNode.Add(&item)
 		} else {
-			lstNode.(*arraylist.List).Add(item)
+			lstNode.(*arraylist.List).Add(&item)
 		}
 	}
 
@@ -82,7 +82,7 @@ func (this *UDPHeartbeat) Print()  {
 		lstNode, _ := g_mapServer.Get(szKey)
 		for j := 0; j < lstNode.(*arraylist.List).Size(); j++ {
 			node, _ := lstNode.(*arraylist.List).Get(j)
-			logger.Info("%d. %s", j, thinkutils.JSONUtils.ToJson(node))
+			logger.Info("%d. %s", j, thinkutils.JSONUtils.ToJson(node.(*ServerNode)))
 		}
 	}
 

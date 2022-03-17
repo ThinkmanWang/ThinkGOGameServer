@@ -57,3 +57,11 @@ func (this *ServerSDK) initUDPHeartbeat(server IGameServer)  {
 
 	go this.m_pUDPHeartbeat.Init()
 }
+
+func (this *ServerSDK) RandServerByType(szType string) *ServerNode {
+	return nil
+}
+
+func (this *ServerSDK) RandServer(szType string, szApId uint64) *ServerNode {
+	return nil
+}
