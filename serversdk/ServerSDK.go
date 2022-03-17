@@ -7,5 +7,5 @@ var (
 )
 
 type ServerSDK struct {
-	
+
 }
