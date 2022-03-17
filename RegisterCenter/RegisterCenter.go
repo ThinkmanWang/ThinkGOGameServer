@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ThinkGOGameServer/serversdk"
 	"ThinkGOGameServer/thinkutils"
 	"ThinkGOGameServer/thinkutils/logger"
 	"fmt"
@@ -15,14 +16,6 @@ var (
 	SERVER_MAIN string = "main"
 	SERVER_GAME string = "game"
 )
-
-type ServerNode struct {
-	Type string `json:"type"`
-	Host string `json:"host"`
-	Port int32 `json:"port"`
-	AppId uint64 `json:"appid"`
-	Heartbeat uint64 `json:"-"`
-}
 
 type RegisterCenter struct {
 	m_nHeartbeatTime     uint32
@@ -53,7 +46,7 @@ func (this *RegisterCenter) onTimeout(conn interface{}) {
 		return
 	}
 
-	pNode := conn.(*ServerNode)
+	pNode := conn.(*serversdk.ServerNode)
 	if nil == pNode {
 		return
 	}
@@ -81,7 +74,7 @@ func (this *RegisterCenter) serverInfo() string {
 func (this *RegisterCenter) OnMsg(pConn *net.UDPConn, addr net.Addr, data []byte) {
 	log.Info("<%s> %s", addr.(*net.UDPAddr).IP, thinkutils.StringUtils.BytesToString(data))
 
-	_pNode := &ServerNode{}
+	_pNode := &serversdk.ServerNode{}
 	err := thinkutils.JSONUtils.FromJson(thinkutils.StringUtils.BytesToString(data), _pNode)
 	if err != nil || nil == _pNode {
 		return
@@ -93,7 +86,7 @@ func (this *RegisterCenter) OnMsg(pConn *net.UDPConn, addr net.Addr, data []byte
 	if SERVER_MAIN == _pNode.Type {
 		pNode, bFound := this.m_mapMainServer.Get(szKey)
 		if bFound {
-			_pNode = pNode.(*ServerNode)
+			_pNode = pNode.(*serversdk.ServerNode)
 			_pNode.Heartbeat = uint64(thinkutils.DateTime.Timestamp())
 		} else {
 			_pNode.Host = addr.(*net.UDPAddr).IP.String()
@@ -105,7 +98,7 @@ func (this *RegisterCenter) OnMsg(pConn *net.UDPConn, addr net.Addr, data []byte
 	} else if SERVER_GAME == _pNode.Type {
 		pNode, bFound := this.m_mapGameServer.Get(szKey)
 		if bFound {
-			_pNode = pNode.(*ServerNode)
+			_pNode = pNode.(*serversdk.ServerNode)
 			_pNode.Heartbeat = uint64(thinkutils.DateTime.Timestamp())
 		} else {
 			_pNode.Host = addr.(*net.UDPAddr).IP.String()

@@ -1,8 +1,7 @@
 package main
 
 import (
-	serversdk2 "ThinkGOGameServer/serversdk"
-	serversdk "ThinkGOGameServer/serversdk/netutils"
+	"ThinkGOGameServer/serversdk"
 	"ThinkGOGameServer/thinkutils/logger"
 	"gopkg.in/ini.v1"
 	"runtime"
@@ -12,6 +11,10 @@ import (
 var (
 	log *logger.LocalLogger = logger.DefaultLogger()
 )
+
+type Mainerver struct {
+	
+}
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -24,11 +27,10 @@ func main() {
 	}
 
 	pUDPHeartbeat := &serversdk.UDPHeartbeat{
-		ServerInfo: serversdk2.GameServerInfo{AppId: 0,
+		ServerInfo: serversdk.GameServerInfo{AppId: 0,
 			Type: "main",
 			Port: uint32(cfg.Section("main_server").Key("udp_port").MustUint(8084))},
 	}
-
 	go pUDPHeartbeat.Init()
 
 	wg := sync.WaitGroup{}

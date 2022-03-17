@@ -25,10 +25,12 @@ func (this *BaseAnimal) Eat() string {
 }
 
 func (this *BaseAnimal) OnInit() string {
+	logger.Info(reflect.TypeOf(this))
 	return "Base OnInit"
 }
 
 func (this *BaseAnimal) OnInitReal(child interface{}) string {
+	logger.Info(reflect.TypeOf(this))
 	ref := reflect.ValueOf(child)
 	method := ref.MethodByName("OnInit")
 	if (method.IsValid()) {
@@ -79,10 +81,8 @@ func main() {
 	//lstAnimal.Add(cat)
 	lstAnimal.Add(dog)
 
-	//for i := 0; i<lstAnimal.Size(); i++ {
-	//	item, _ := lstAnimal.Get(i)
-	//	animal := BaseAnimal(item.(BaseAnimal))
-	//	animal.OnInitReal(item.(IAnimal))
-	//	logger.Info(item.(IAnimal).OnInit())
-	//}
+	for i := 0; i<lstAnimal.Size(); i++ {
+		item, _ := lstAnimal.Get(i)
+		logger.Info(item.(IAnimal).OnInit())
+	}
 }
