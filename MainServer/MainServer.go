@@ -2,6 +2,7 @@ package main
 
 import (
 	"ThinkGOGameServer/serversdk"
+	"ThinkGOGameServer/thinkutils"
 	"ThinkGOGameServer/thinkutils/logger"
 	"gopkg.in/ini.v1"
 	"runtime"
@@ -32,6 +33,11 @@ func (this *Mainerver) OnInitGameData() serversdk.GameServerInfo {
 		Type: "main",
 		Port: uint32(cfg.Section("main_server").Key("udp_port").MustUint(8084)),
 	}
+}
+
+func (this *Mainerver) SendToGameServer(nAppId uint64, data []byte) {
+	pServer := g_pSDK.RandServer(serversdk.SERVER_TYPE_GAME, 1)
+	logger.Info("%s", thinkutils.JSONUtils.ToJson(pServer))
 }
 
 func main() {

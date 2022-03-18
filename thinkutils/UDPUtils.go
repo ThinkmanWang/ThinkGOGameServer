@@ -57,7 +57,7 @@ func (this udputils) Send(szIP string, nPort int, data []byte) *net.UDPConn {
 		return pConn
 	}
 
-	log.Info("%p", pConn)
+	//log.Info("%p", pConn)
 	_, err := pConn.Write(data)
 	if err != nil {
 		pConn.Close()

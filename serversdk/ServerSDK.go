@@ -1,11 +1,17 @@
 package serversdk
 
 import (
+	"ThinkGOGameServer/thinkutils"
 	"ThinkGOGameServer/thinkutils/logger"
+	"github.com/emirpasic/gods/lists/arraylist"
+	"net"
 )
 
 var (
 	log *logger.LocalLogger = logger.DefaultLogger()
+	SERVER_TYPE_MAIN string = "main"
+	SERVER_TYPE_GAME string = "game"
+	SERVER_MAIN_APPID uint64 = 0
 )
 
 type GameServerInfo struct {
@@ -42,10 +48,25 @@ type ServerNode struct {
 
 type ServerSDK struct {
 	m_pUDPHeartbeat *UDPHeartbeat
+	m_pUDPServer *thinkutils.UDPServer
 }
 
 func (this *ServerSDK) Init(server IGameServer)  {
 	this.initUDPHeartbeat(server)
+	this.initUDPPort(server)
+}
+
+func (this *ServerSDK) onUDPMsg(pConn *net.UDPConn, addr net.Addr, data []byte) {
+	logger.Info("Received %d bytes", len(data))
+}
+
+func (this *ServerSDK) initUDPPort(server IGameServer)  {
+	info := server.OnInitGameData()
+
+	this.m_pUDPServer = &thinkutils.UDPServer{OnMsg: this.onUDPMsg}
+	go this.m_pUDPServer.Start(int(info.Port))
+
+	logger.Info("UDP Server started. port: %d", info.Port)
 }
 
 func (this *ServerSDK) initUDPHeartbeat(server IGameServer)  {
@@ -58,10 +79,95 @@ func (this *ServerSDK) initUDPHeartbeat(server IGameServer)  {
 	go this.m_pUDPHeartbeat.Init()
 }
 
-func (this *ServerSDK) RandServerByType(szType string) *ServerNode {
-	return nil
+func (this *ServerSDK) RandServer(szType string, nAppId uint64) *ServerNode {
+	lstNode := this.GetAllServer(szType, nAppId)
+
+	if nil == lstNode || len(lstNode) <= 0 {
+		return nil
+	}
+
+	nPos := thinkutils.RandUtils.RandInt(0, len(lstNode))
+	pNode := lstNode[nPos]
+
+	return pNode
 }
 
-func (this *ServerSDK) RandServer(szType string, szApId uint64) *ServerNode {
-	return nil
+func (this *ServerSDK) GetAllServer(szType string, nAppId uint64) []*ServerNode {
+	lstRet := make([]*ServerNode, 0)
+
+	pLstNode, bFound := g_mapServer.Get(szType)
+	if false == bFound {
+		return nil
+	}
+
+	for i := 0; i < pLstNode.(*arraylist.List).Size(); i++ {
+		_pNode, bFound := pLstNode.(*arraylist.List).Get(i)
+		if false == bFound {
+			continue
+		}
+
+		pNode := _pNode.(*ServerNode)
+		if nAppId != pNode.AppId {
+			continue
+		}
+
+		lstRet = append(lstRet, pNode)
+	}
+
+	return lstRet
+}
+
+func (this *ServerSDK) SendData(pNode *ServerNode, data []byte)  {
+	if nil == pNode {
+		return
+	}
+
+	go thinkutils.UDPUtils.Send(pNode.Host, int(pNode.Port), data)
+}
+
+func (this *ServerSDK) SendToRandGameServer(nAppId uint64, data []byte) {
+	pNode := this.RandServer(SERVER_TYPE_GAME, nAppId)
+	if nil == pNode {
+		return
+	}
+
+	this.SendData(pNode, data)
+}
+
+func (this *ServerSDK) SendToAllGameServer(nAppId uint64, data []byte) {
+	lstNode := this.GetAllServer(SERVER_TYPE_GAME, nAppId)
+	if nil == lstNode || len(lstNode) <= 0 {
+		return
+	}
+
+	for i := 0; i < len(lstNode); i++ {
+		this.SendData(lstNode[i], data)
+	}
+}
+
+func (this *ServerSDK) SendToRandMainServer(data []byte) {
+	pNode := this.RandServer(SERVER_TYPE_MAIN, SERVER_MAIN_APPID)
+	if nil == pNode {
+		return
+	}
+
+	this.SendData(pNode, data)
+}
+
+func (this *ServerSDK) SendToAllMainServer(data []byte) {
+	lstNode := this.GetAllServer(SERVER_TYPE_GAME, SERVER_MAIN_APPID)
+	if nil == lstNode || len(lstNode) <= 0 {
+		return
+	}
+
+	for i := 0; i < len(lstNode); i++ {
+		this.SendData(lstNode[i], data)
+	}
+}
+
+func (this *ServerSDK) SendToClient(data []byte) {
+	/*
+	 1. make UDP package
+	 2. send to main server
+	 */
 }
