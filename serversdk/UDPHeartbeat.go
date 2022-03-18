@@ -38,7 +38,7 @@ func (this *UDPHeartbeat) heartbeat()  {
 	if err != nil {
 		return
 	}
-	log.Info("Received %s from %s:%d", string(buf[0:n]), addr.IP, addr.Port)
+	log.Debug("Received %s from %s:%d", string(buf[0:n]), addr.IP, addr.Port)
 	//fmt.Println("Received ", string(buf[0:n]), " from ", addr)
 
 	var lstServer []ServerNode
