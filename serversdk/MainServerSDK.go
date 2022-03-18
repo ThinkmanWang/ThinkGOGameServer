@@ -17,7 +17,6 @@ type MainServerInfo struct {
 
 type IMainServer interface {
 	OnInitGameData() GameServerInfo
-	OnUDPMsg(pConn *net.UDPConn, addr net.Addr, data []byte)
 	OnInitWS() MainServerInfo
 	OnWSConnect(pConn *websocket.Conn)
 	OnWSMsg(pConn *websocket.Conn, msg []byte)
@@ -39,11 +38,14 @@ func (this *MainServerSDK) Init(server IMainServer)  {
 	this.initWebsocket(server)
 }
 
+func (this *MainServerSDK) onUDPMsg(pConn *net.UDPConn, addr net.Addr, data []byte) {
+	log.Info("Receive %d bytes", len(data))
+}
 
 func (this *MainServerSDK) initUDPPort(server IMainServer)  {
 	info := server.OnInitGameData()
 
-	this.m_pUDPServer = &thinkutils.UDPServer{OnMsg: this.m_pMainServer.OnUDPMsg}
+	this.m_pUDPServer = &thinkutils.UDPServer{OnMsg: this.onUDPMsg}
 	go this.m_pUDPServer.Start(int(info.Port))
 
 	logger.Info("UDP Server started. port: %d", info.Port)

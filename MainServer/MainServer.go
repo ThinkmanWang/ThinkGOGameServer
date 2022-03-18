@@ -6,7 +6,6 @@ import (
 	"ThinkGOGameServer/thinkutils/logger"
 	"github.com/gorilla/websocket"
 	"gopkg.in/ini.v1"
-	"net"
 	"runtime"
 )
 
@@ -35,10 +34,6 @@ func (this *Mainerver) OnInitGameData() serversdk.GameServerInfo {
 		Type: serversdk.SERVER_TYPE_MAIN,
 		Port: uint32(cfg.Section("main_server").Key("udp_port").MustUint(8084)),
 	}
-}
-
-func (this *Mainerver) OnUDPMsg(pConn *net.UDPConn, addr net.Addr, data []byte) {
-	log.Info("Receive %d bytes", len(data))
 }
 
 func (this *Mainerver) OnInitWS() serversdk.MainServerInfo {

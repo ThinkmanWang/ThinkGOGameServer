@@ -3,7 +3,6 @@ package serversdk
 import (
 	"ThinkGOGameServer/thinkutils"
 	"ThinkGOGameServer/thinkutils/logger"
-	"fmt"
 	"github.com/emirpasic/gods/lists/arraylist"
 	"github.com/emirpasic/gods/maps/hashmap"
 	"gopkg.in/ini.v1"
@@ -39,7 +38,8 @@ func (this *UDPHeartbeat) heartbeat()  {
 	if err != nil {
 		return
 	}
-	fmt.Println("Received ", string(buf[0:n]), " from ", addr)
+	log.Info("Received %s from %s:%d", string(buf[0:n]), addr.IP, addr.Port)
+	//fmt.Println("Received ", string(buf[0:n]), " from ", addr)
 
 	var lstServer []ServerNode
 	err = thinkutils.JSONUtils.FromJson(string(buf[0:n]), &lstServer)
