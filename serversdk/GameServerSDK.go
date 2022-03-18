@@ -46,21 +46,24 @@ type ServerNode struct {
 	Heartbeat uint64 `json:"-"`
 }
 
-type ServerSDK struct {
+type GameServerSDK struct {
 	m_pUDPHeartbeat *UDPHeartbeat
 	m_pUDPServer *thinkutils.UDPServer
+	m_pGameServer IGameServer
 }
 
-func (this *ServerSDK) Init(server IGameServer)  {
+func (this *GameServerSDK) Init(server IGameServer)  {
+	this.m_pGameServer = server
+
 	this.initUDPHeartbeat(server)
 	this.initUDPPort(server)
 }
 
-func (this *ServerSDK) onUDPMsg(pConn *net.UDPConn, addr net.Addr, data []byte) {
+func (this *GameServerSDK) onUDPMsg(pConn *net.UDPConn, addr net.Addr, data []byte) {
 	logger.Info("Received %d bytes", len(data))
 }
 
-func (this *ServerSDK) initUDPPort(server IGameServer)  {
+func (this *GameServerSDK) initUDPPort(server IGameServer)  {
 	info := server.OnInitGameData()
 
 	this.m_pUDPServer = &thinkutils.UDPServer{OnMsg: this.onUDPMsg}
@@ -69,7 +72,7 @@ func (this *ServerSDK) initUDPPort(server IGameServer)  {
 	logger.Info("UDP Server started. port: %d", info.Port)
 }
 
-func (this *ServerSDK) initUDPHeartbeat(server IGameServer)  {
+func (this *GameServerSDK) initUDPHeartbeat(server IGameServer)  {
 	info := server.OnInitGameData()
 
 	this.m_pUDPHeartbeat = &UDPHeartbeat{
@@ -79,7 +82,7 @@ func (this *ServerSDK) initUDPHeartbeat(server IGameServer)  {
 	go this.m_pUDPHeartbeat.Init()
 }
 
-func (this *ServerSDK) RandServer(szType string, nAppId uint64) *ServerNode {
+func (this *GameServerSDK) RandServer(szType string, nAppId uint64) *ServerNode {
 	lstNode := this.GetAllServer(szType, nAppId)
 
 	if nil == lstNode || len(lstNode) <= 0 {
@@ -92,7 +95,7 @@ func (this *ServerSDK) RandServer(szType string, nAppId uint64) *ServerNode {
 	return pNode
 }
 
-func (this *ServerSDK) GetAllServer(szType string, nAppId uint64) []*ServerNode {
+func (this *GameServerSDK) GetAllServer(szType string, nAppId uint64) []*ServerNode {
 	lstRet := make([]*ServerNode, 0)
 
 	pLstNode, bFound := g_mapServer.Get(szType)
@@ -117,7 +120,7 @@ func (this *ServerSDK) GetAllServer(szType string, nAppId uint64) []*ServerNode 
 	return lstRet
 }
 
-func (this *ServerSDK) SendData(pNode *ServerNode, data []byte)  {
+func (this *GameServerSDK) SendData(pNode *ServerNode, data []byte)  {
 	if nil == pNode {
 		return
 	}
@@ -125,7 +128,7 @@ func (this *ServerSDK) SendData(pNode *ServerNode, data []byte)  {
 	go thinkutils.UDPUtils.Send(pNode.Host, int(pNode.Port), data)
 }
 
-func (this *ServerSDK) SendToRandGameServer(nAppId uint64, data []byte) {
+func (this *GameServerSDK) SendToRandGameServer(nAppId uint64, data []byte) {
 	pNode := this.RandServer(SERVER_TYPE_GAME, nAppId)
 	if nil == pNode {
 		return
@@ -134,7 +137,7 @@ func (this *ServerSDK) SendToRandGameServer(nAppId uint64, data []byte) {
 	this.SendData(pNode, data)
 }
 
-func (this *ServerSDK) SendToAllGameServer(nAppId uint64, data []byte) {
+func (this *GameServerSDK) SendToAllGameServer(nAppId uint64, data []byte) {
 	lstNode := this.GetAllServer(SERVER_TYPE_GAME, nAppId)
 	if nil == lstNode || len(lstNode) <= 0 {
 		return
@@ -145,7 +148,7 @@ func (this *ServerSDK) SendToAllGameServer(nAppId uint64, data []byte) {
 	}
 }
 
-func (this *ServerSDK) SendToRandMainServer(data []byte) {
+func (this *GameServerSDK) SendToRandMainServer(data []byte) {
 	pNode := this.RandServer(SERVER_TYPE_MAIN, SERVER_MAIN_APPID)
 	if nil == pNode {
 		return
@@ -154,7 +157,7 @@ func (this *ServerSDK) SendToRandMainServer(data []byte) {
 	this.SendData(pNode, data)
 }
 
-func (this *ServerSDK) SendToAllMainServer(data []byte) {
+func (this *GameServerSDK) SendToAllMainServer(data []byte) {
 	lstNode := this.GetAllServer(SERVER_TYPE_GAME, SERVER_MAIN_APPID)
 	if nil == lstNode || len(lstNode) <= 0 {
 		return
@@ -165,7 +168,7 @@ func (this *ServerSDK) SendToAllMainServer(data []byte) {
 	}
 }
 
-func (this *ServerSDK) SendToClient(data []byte) {
+func (this *GameServerSDK) SendToClient(data []byte) {
 	/*
 	 1. make UDP package
 	 2. send to main server

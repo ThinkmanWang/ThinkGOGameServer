@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	log *logger.LocalLogger = logger.DefaultLogger()
-	g_pSDK *serversdk.ServerSDK = &serversdk.ServerSDK{}
+	log *logger.LocalLogger         = logger.DefaultLogger()
+	g_pSDK *serversdk.GameServerSDK = &serversdk.GameServerSDK{}
 )
 
 type Mainerver struct {
