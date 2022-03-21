@@ -72,6 +72,9 @@ func (this *Mainerver) OnWSMsg(pConn *websocket.Conn, data []byte) {
 	switch *pGamePkg.Type {
 	case serversdk.HeadType_LOGIN_REQUEST:
 		this.doLogin(pConn, pGamePkg)
+	case serversdk.HeadType_LOGOUT_REQUEST:
+
+
 	case serversdk.HeadType_HEARTBEAT_REQUEST:
 		this.doHeartbeatReq(pConn, pGamePkg)
 	}
@@ -87,28 +90,26 @@ func (this *Mainerver) OnWSTimeout(pConn *websocket.Conn) {
 }
 
 func (this *Mainerver) doLogin(pConn *websocket.Conn, pReq *serversdk.GamePkg)  {
-	var nCode int32 = 200
-	szMsg := "success"
-	pLoginResp := &serversdk.LoginResponse{
-		Code: &nCode,
-		Msg: &szMsg,
-	}
+	pData := g_pSDK.MkLoginResp(*pReq.Uid, 200, "success")
 
-	nType := serversdk.HeadType_LOGIN_RESPONSE
-	nTimestamp := thinkutils.DateTime.Timestamp()
-	pResp := &serversdk.GamePkg{
-		Type: &nType,
-		Uid: pReq.Uid,
-		Timestamp: &nTimestamp,
-		LoginResponse: pLoginResp,
-	}
-
-	pData, err := proto.Marshal(pResp)
-	if err != nil {
+	if nil == pData {
 		return
 	}
 
-	err = pConn.WriteMessage(websocket.BinaryMessage, pData)
+	err := pConn.WriteMessage(websocket.BinaryMessage, pData)
+	if err != nil {
+		log.Info("write:", err.Error())
+	}
+}
+
+func (this *Mainerver) doLogout(pConn *websocket.Conn, pReq *serversdk.GamePkg) {
+	pData := g_pSDK.MkLogoutResp(*pReq.Uid)
+
+	if nil == pData {
+		return
+	}
+
+	err := pConn.WriteMessage(websocket.BinaryMessage, pData)
 	if err != nil {
 		log.Info("write:", err.Error())
 	}

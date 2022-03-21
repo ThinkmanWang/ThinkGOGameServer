@@ -5,6 +5,7 @@ import (
 	"ThinkGOGameServer/thinkutils/logger"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	"net"
 )
@@ -80,4 +81,89 @@ func (this *MainServerSDK) initWebsocket(server IMainServer) {
 
 	szPort := fmt.Sprintf(":%d", serverInfo.Port)
 	eng.Run(szPort)
+}
+
+func (this *MainServerSDK) MkLoginResp(szUid string, nCode int32, szMsg string) []byte {
+	pLoginResp := &LoginResponse{
+		Code: &nCode,
+		Msg: &szMsg,
+	}
+
+	nType := HeadType_LOGIN_RESPONSE
+	nTimestamp := thinkutils.DateTime.Timestamp()
+	pResp := &GamePkg{
+		Type: &nType,
+		Uid: &szUid,
+		Timestamp: &nTimestamp,
+		LoginResponse: pLoginResp,
+	}
+
+	pData, err := proto.Marshal(pResp)
+	if err != nil {
+		return nil
+	}
+
+	return pData
+}
+
+func (this *MainServerSDK) MkLogoutResp(szUid string) []byte {
+	pLogout := &LogoutResponse{}
+
+	nType := HeadType_LOGOUT_RESPONSE
+	nTimestamp := thinkutils.DateTime.Timestamp()
+	pResp := &GamePkg{
+		Type: &nType,
+		Uid: &szUid,
+		Timestamp: &nTimestamp,
+		LogoutResponse: pLogout,
+	}
+
+	pData, err := proto.Marshal(pResp)
+	if err != nil {
+		return nil
+	}
+
+	return pData
+}
+
+func (this *MainServerSDK) MkHeartbeatResp(szUid string) []byte {
+	pHeartbeat := &HeartbeatResponse{}
+
+	nType := HeadType_HEARTBEAT_RESPONSE
+	nTimestamp := thinkutils.DateTime.Timestamp()
+	pResp := &GamePkg{
+		Type: &nType,
+		Uid: &szUid,
+		Timestamp: &nTimestamp,
+		HeartbeatResponse: pHeartbeat,
+	}
+
+	pData, err := proto.Marshal(pResp)
+	if err != nil {
+		return nil
+	}
+
+	return pData
+}
+
+func (this *MainServerSDK) MkSendToClient(szUid string, data []byte) []byte {
+	pToClient := SendToClient{
+		Data: data,
+	}
+
+	nType := HeadType_SEND_TO_CLIENT
+	nTimestamp := thinkutils.DateTime.Timestamp()
+	pResp := &GamePkg{
+		Type: &nType,
+		Uid: &szUid,
+		Timestamp: &nTimestamp,
+		SendToClient: &pToClient,
+	}
+
+	pData, err := proto.Marshal(pResp)
+	if err != nil {
+		return nil
+	}
+
+	return pData
 }
