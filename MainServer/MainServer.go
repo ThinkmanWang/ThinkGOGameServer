@@ -4,6 +4,7 @@ import (
 	"ThinkGOGameServer/serversdk"
 	"ThinkGOGameServer/thinkutils"
 	"ThinkGOGameServer/thinkutils/logger"
+	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	"gopkg.in/ini.v1"
 	"runtime"
@@ -59,8 +60,19 @@ func (this *Mainerver) OnWSConnect(pConn *websocket.Conn) {
 	log.Info("New Connect")
 }
 
-func (this *Mainerver) OnWSMsg(pConn *websocket.Conn, msg []byte) {
-	log.Info("[%p] recv: %s", pConn, thinkutils.StringUtils.BytesToString(msg))
+func (this *Mainerver) OnWSMsg(pConn *websocket.Conn, data []byte) {
+	pGamePkg := &serversdk.GamePkg{}
+	err := proto.Unmarshal(data, pGamePkg)
+	if err != nil {
+		log.Fatal("unmarshaling error: ", err)
+	}
+
+	log.Info("%s", thinkutils.JSONUtils.ToJson(pGamePkg))
+
+	switch *pGamePkg.Type {
+	case serversdk.HeadType_HEARTBEAT_REQUEST:
+		this.doHeartbeatResp(pConn, pGamePkg)
+	}
 }
 
 func (this *Mainerver) OnWSClose(pConn *websocket.Conn) {
@@ -70,6 +82,26 @@ func (this *Mainerver) OnWSClose(pConn *websocket.Conn) {
 
 func (this *Mainerver) OnWSTimeout(pConn *websocket.Conn) {
 	log.Info("Heartbeat timeout")
+}
+
+func (this *Mainerver) doHeartbeatResp(pConn *websocket.Conn, pReq *serversdk.GamePkg)  {
+	nType := serversdk.HeadType_HEARTBEAT_RESPONSE
+	nTimestamp := thinkutils.DateTime.Timestamp()
+	pResp := &serversdk.GamePkg{
+		Type: &nType,
+		Uid: pReq.Uid,
+		Timestamp: &nTimestamp,
+	}
+
+	pData, err := proto.Marshal(pResp)
+	if err != nil {
+		return
+	}
+
+	err = pConn.WriteMessage(websocket.BinaryMessage, pData)
+	if err != nil {
+		log.Info("write:", err.Error())
+	}
 }
 
 func main() {

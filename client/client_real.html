@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>websocket</title>
+
+    <script src="protobuf.js"></script>
+    <script src="GamePkg_pb.js"></script>
+
+    <script type="text/javascript">
+        function uuid() {
+            var temp_url = URL.createObjectURL(new Blob());
+            var uuid = temp_url.toString(); // blob:https://xxx.com/b250d159-e1b6-4a87-9002-885d90033be3
+            URL.revokeObjectURL(temp_url);
+            return uuid.substr(uuid.lastIndexOf("/") + 1);
+        }
+
+        function heartbeat() {
+            protobuf.load("./GamePkg.proto", function(err, root) {
+                if (err) {
+                    throw err;
+                }
+
+                var pkg = root.lookupType("GamePkg");
+                var playload = {
+                    type: 6
+                    , uid: uid
+                    , timestamp: Math.floor(Date.now())
+                    , heartbeatRequest: {}
+                };
+
+                var errMsg = pkg.verify(playload);
+                if (errMsg) {
+                    throw Error(errMsg);
+                }
+
+                var byteMsg = pkg.create(playload);
+                var buf = pkg.encode(byteMsg).finish();
+
+                var szTxt = JSON.stringify(playload);
+                var ta = document.getElementById("resp");
+                ta.value = ta.value + "\n>>" + szTxt;
+                ta.scrollTop = ta.scrollHeight;
+
+                sendMessage(buf);
+            });
+        }
+
+        function sendMessage(szTxt) {
+            if(!window.WebSocket) {
+                return;
+            }
+
+            if(socket.readyState == WebSocket.OPEN) {
+                socket.send(szTxt);
+            } else {
+                alert("连接未开启！")
+            }
+        }
+
+        function clearTxt() {
+            document.getElementById('resp').value = '';
+        }
+
+        var uid = uuid();
+        var socket;
+        if(window.WebSocket) {
+            socket = new WebSocket("ws://127.0.0.1:8082/game");
+            socket.onmessage = function (event) {
+                try {
+                    // console.log("RECEIVE");
+
+                    var reader = new FileReader();
+                    reader.readAsArrayBuffer(event.data);
+                    reader.addEventListener("loadend", function(e)
+                    {
+                        protobuf.load("./GamePkg.proto", function(err, root) {
+                            if (err) {
+                                throw err;
+                            }
+
+                            var pkg = root.lookupType("GamePkg");
+
+                            var dictMsg = pkg.decode(new Uint8Array(e.target.result));
+                            // console.log(dictMsg);
+                            var szTxt = JSON.stringify(dictMsg);
+
+                            var ta = document.getElementById("resp");
+                            ta.value = ta.value + "\n<<<" + szTxt;
+                            ta.scrollTop = ta.scrollHeight;
+                        });
+                    });
+                } catch (e) {
+                    console.log(e.description);
+                }
+            }
+
+            socket.onopen = function (event) {
+                protobuf.load("./GamePkg.proto", function(err, root) {
+                    if (err) {
+                        throw err;
+                    }
+
+                    var pkg = root.lookupType("GamePkg");
+                    var playload = {
+                        type: 1
+                        , uid: uid
+                        , timestamp: Math.floor(Date.now() / 1000)
+                        , loginRequest: {}
+                    };
+
+                    var errMsg = pkg.verify(playload);
+                    if (errMsg) {
+                        throw Error(errMsg);
+                    }
+
+                    var byteMsg = pkg.create(playload);
+                    var buf = pkg.encode(byteMsg).finish();
+
+                    sendMessage(buf);
+                });
+
+                var ta = document.getElementById("resp");
+                ta.value = "连接接开启！";
+
+                var int=self.setInterval("heartbeat()", 3000);
+            }
+
+            socket.onclose = function (event) {
+                var ta = document.getElementById("resp");
+                ta.value = ta.value + "\n" + "连接关闭！";
+                ta.scrollTop = ta.scrollHeight;
+            }
+        } else {
+            alert("浏览器不支持websocket");
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <h3> LOG：</h3>
+
+    <textarea id="resp" style="width: 100%; height: 300px"></textarea><br />
+    <button id="btn-clear" onclick="clearTxt();">清空内容</button><br />
+
+</body>
+</html>

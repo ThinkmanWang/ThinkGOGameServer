@@ -1,0 +1,65 @@
+syntax = "proto2";
+
+package serversdk;
+
+enum HeadType {
+  LOGIN_REQUEST = 1;
+  LOGIN_RESPONSE = 2;
+  LOGOUT_REQUEST = 3;
+  LOGOUT_RESPONSE = 4;
+  NOTIFICATION = 5;
+  HEARTBEAT_REQUEST = 6;
+  HEARTBEAT_RESPONSE = 7;
+  SEND_TO_SERVER = 8;
+  SEND_TO_CLIENT = 9;
+
+  //More package type
+}
+
+message LoginRequest {
+}
+
+message LoginResponse {
+  required int32 code = 1;
+  required string msg = 2;
+}
+
+message LogoutRequest {
+}
+
+message LogoutResponse {
+}
+
+message Notification {
+  required string msg = 1;
+}
+
+message HeartbeatRequest {
+}
+
+message HeartbeatResponse {
+}
+
+message SendToServer {
+  required bytes data = 1;
+}
+
+message SendToClient {
+  required bytes data = 1;
+}
+
+message GamePkg {
+  required HeadType type = 1;
+  required string uid = 2;
+  required int64 timestamp = 3;
+
+  optional LoginRequest loginRequest = 4;
+  optional LoginResponse loginResponse = 5;
+  optional LogoutRequest logoutRequest = 6;
+  optional LogoutResponse logoutResponse = 7;
+  optional Notification notification = 8;
+  optional HeartbeatRequest heartbeatRequest = 9;
+  optional HeartbeatResponse heartbeatResponse = 10;
+  optional SendToServer sendToServer = 11;
+  optional SendToClient sendToClient = 12;
+}
