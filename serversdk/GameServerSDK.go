@@ -168,7 +168,7 @@ func (this *GameServerSDK) SendToAllMainServer(data []byte) {
 	}
 }
 
-func (this *GameServerSDK) SendToClient(data []byte) {
+func (this *GameServerSDK) SendToClient(user interface{}, data []byte) {
 	/*
 	 1. make UDP package
 	 2. send to main server

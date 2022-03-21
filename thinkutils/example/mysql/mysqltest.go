@@ -26,6 +26,12 @@ var (
 	}
 	fmt.Println(count)
 */
+
+type MyType struct {
+	Id uint64 `json:"id" field:"id"`
+	Name string `json:"name" field:"name"`
+}
+
 func basicQueryJSON(wg *sync.WaitGroup) {
 
 	db := thinkutils.ThinkMysql.QuickConn()
