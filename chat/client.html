@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>websocket</title>
+
+    <script src="protobuf.js"></script>
+    <script src="GamePkg_pb.js"></script>
+
+    <script type="text/javascript">
+        function uuid() {
+            var temp_url = URL.createObjectURL(new Blob());
+            var uuid = temp_url.toString(); // blob:https://xxx.com/b250d159-e1b6-4a87-9002-885d90033be3
+            URL.revokeObjectURL(temp_url);
+            return uuid.substr(uuid.lastIndexOf("/") + 1);
+        }
+
+        function heartbeat() {
+            protobuf.load("./GamePkg.proto", function(err, root) {
+                if (err) {
+                    throw err;
+                }
+
+                var pkg = root.lookupType("GamePkg");
+                var playload = {
+                    type: 6
+                    , uid: uid
+                    , timestamp: Math.floor(Date.now())
+                    , heartbeatRequest: {}
+                };
+
+                var errMsg = pkg.verify(playload);
+                if (errMsg) {
+                    throw Error(errMsg);
+                }
+
+                var byteMsg = pkg.create(playload);
+                var buf = pkg.encode(byteMsg).finish();
+
+                var szTxt = JSON.stringify(playload);
+                // var ta = document.getElementById("resp");
+                // ta.value = ta.value + "\n>>" + szTxt;
+                // ta.scrollTop = ta.scrollHeight;
+
+                sendBinary(buf);
+            });
+        }
+
+        function stringToByte(str) {
+            var bytes = new Array();
+            var len, c;
+            len = str.length;
+            for(var i = 0; i < len; i++) {
+                c = str.charCodeAt(i);
+                if(c >= 0x010000 && c <= 0x10FFFF) {
+                    bytes.push(((c >> 18) & 0x07) | 0xF0);
+                    bytes.push(((c >> 12) & 0x3F) | 0x80);
+                    bytes.push(((c >> 6) & 0x3F) | 0x80);
+                    bytes.push((c & 0x3F) | 0x80);
+                } else if(c >= 0x000800 && c <= 0x00FFFF) {
+                    bytes.push(((c >> 12) & 0x0F) | 0xE0);
+                    bytes.push(((c >> 6) & 0x3F) | 0x80);
+                    bytes.push((c & 0x3F) | 0x80);
+                } else if(c >= 0x000080 && c <= 0x0007FF) {
+                    bytes.push(((c >> 6) & 0x1F) | 0xC0);
+                    bytes.push((c & 0x3F) | 0x80);
+                } else {
+                    bytes.push(c & 0xFF);
+                }
+            }
+            return bytes;
+        }
+
+        function byteToString(arr) {
+            if(typeof arr === 'string') {
+                return arr;
+            }
+            var str = '',
+                _arr = arr;
+            for(var i = 0; i < _arr.length; i++) {
+                var one = _arr[i].toString(2),
+                    v = one.match(/^1+?(?=0)/);
+                if(v && one.length == 8) {
+                    var bytesLength = v[0].length;
+                    var store = _arr[i].toString(2).slice(7 - bytesLength);
+                    for(var st = 1; st < bytesLength; st++) {
+                        store += _arr[st + i].toString(2).slice(2);
+                    }
+                    str += String.fromCharCode(parseInt(store, 2));
+                    i += bytesLength - 1;
+                } else {
+                    str += String.fromCharCode(_arr[i]);
+                }
+            }
+            return str;
+        }
+
+        function sendMessage() {
+            var text = document.getElementById("send-box");
+            var szTxt = text.value;
+
+            protobuf.load("./GamePkg.proto", function(err, root) {
+                if (err) {
+                    throw err;
+                }
+
+                var sendToServer = root.lookupType("SendToServer");
+                var temp = {
+                    data: stringToByte(szTxt)
+                };
+
+                var
+
+                var errMsg = pkg.verify(playload);
+                if (errMsg) {
+                    throw Error(errMsg);
+                }
+
+                var byteMsg = pkg.create(playload);
+                var buf = pkg.encode(byteMsg).finish();
+
+                var szTxt = JSON.stringify(playload);
+                // var ta = document.getElementById("resp");
+                // ta.value = ta.value + "\n>>" + szTxt;
+                // ta.scrollTop = ta.scrollHeight;
+
+                sendBinary(buf);
+            });
+        }
+
+        function sendBinary(data) {
+            if(!window.WebSocket) {
+                return;
+            }
+
+            if(socket.readyState == WebSocket.OPEN) {
+                socket.send(data);
+            } else {
+                alert("连接未开启！")
+            }
+        }
+
+        function clearTxt() {
+            // document.getElementById('resp').value = '';
+        }
+
+        var uid = uuid();
+        var socket;
+        if(window.WebSocket) {
+            socket = new WebSocket("ws://127.0.0.1:8082/game");
+            socket.onmessage = function (event) {
+                try {
+                    // console.log("RECEIVE");
+
+                    var reader = new FileReader();
+                    reader.readAsArrayBuffer(event.data);
+                    reader.addEventListener("loadend", function(e)
+                    {
+                        protobuf.load("./GamePkg.proto", function(err, root) {
+                            if (err) {
+                                throw err;
+                            }
+
+                            var pkg = root.lookupType("GamePkg");
+
+                            var dictMsg = pkg.decode(new Uint8Array(e.target.result));
+                            // console.log(dictMsg);
+                            // var szTxt = JSON.stringify(dictMsg);
+
+                            if (9 == dictMsg.type) {
+
+                            } else {
+                                var szTxt = JSON.stringify(dictMsg);
+                                console.log(szTxt)
+                            }
+
+                        });
+                    });
+                } catch (e) {
+                    console.log(e.description);
+                }
+            }
+
+            socket.onopen = function (event) {
+                protobuf.load("./GamePkg.proto", function(err, root) {
+                    if (err) {
+                        throw err;
+                    }
+
+                    var pkg = root.lookupType("GamePkg");
+                    var playload = {
+                        type: 1
+                        , uid: uid
+                        , timestamp: Math.floor(Date.now() / 1000)
+                        , loginRequest: {}
+                    };
+
+                    var errMsg = pkg.verify(playload);
+                    if (errMsg) {
+                        throw Error(errMsg);
+                    }
+
+                    var byteMsg = pkg.create(playload);
+                    var buf = pkg.encode(byteMsg).finish();
+
+                    sendBinary(buf);
+                });
+
+                // var ta = document.getElementById("resp");
+                // ta.value = "连接接开启！";
+
+                var int=self.setInterval("heartbeat()", 3000);
+            }
+
+            socket.onclose = function (event) {
+                // var ta = document.getElementById("resp");
+                // ta.value = ta.value + "\n" + "连接关闭！";
+                // ta.scrollTop = ta.scrollHeight;
+            }
+        } else {
+            alert("浏览器不支持websocket");
+        }
+
+    </script>
+
+</head>
+<body>
+    <textarea id="char-box" style="width: 100%; height: 400px"></textarea><br />
+    <input id="send-box" type="text" style="width: 100%;">
+    <button id="btn-clear" onclick="sendMessage();">发送</button><br />
+
+</body>
+</html>
