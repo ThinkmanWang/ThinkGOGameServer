@@ -50,16 +50,17 @@ message SendToClient {
 
 message GamePkg {
   required HeadType type = 1;
-  required string uid = 2;
-  required int64 timestamp = 3;
+  required int32 appId = 2;
+  required string uid = 3;
+  required int64 timestamp = 4;
 
-  optional LoginRequest loginRequest = 4;
-  optional LoginResponse loginResponse = 5;
-  optional LogoutRequest logoutRequest = 6;
-  optional LogoutResponse logoutResponse = 7;
-  optional Notification notification = 8;
-  optional HeartbeatRequest heartbeatRequest = 9;
-  optional HeartbeatResponse heartbeatResponse = 10;
-  optional SendToServer sendToServer = 11;
-  optional SendToClient sendToClient = 12;
+  optional LoginRequest loginRequest = 5;
+  optional LoginResponse loginResponse = 6;
+  optional LogoutRequest logoutRequest = 7;
+  optional LogoutResponse logoutResponse = 8;
+  optional Notification notification = 9;
+  optional HeartbeatRequest heartbeatRequest = 10;
+  optional HeartbeatResponse heartbeatResponse = 11;
+  optional SendToServer sendToServer = 12;
+  optional SendToClient sendToClient = 13;
 }

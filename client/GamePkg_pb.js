@@ -1459,8 +1459,9 @@ proto.serversdk.GamePkg.prototype.toObject = function(opt_includeInstance) {
 proto.serversdk.GamePkg.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
-    uid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-    timestamp: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    appid: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+    uid: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+    timestamp: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
     loginrequest: (f = msg.getLoginrequest()) && proto.serversdk.LoginRequest.toObject(includeInstance, f),
     loginresponse: (f = msg.getLoginresponse()) && proto.serversdk.LoginResponse.toObject(includeInstance, f),
     logoutrequest: (f = msg.getLogoutrequest()) && proto.serversdk.LogoutRequest.toObject(includeInstance, f),
@@ -1511,54 +1512,58 @@ proto.serversdk.GamePkg.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setAppid(value);
+      break;
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setUid(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setTimestamp(value);
       break;
-    case 4:
+    case 5:
       var value = new proto.serversdk.LoginRequest;
       reader.readMessage(value,proto.serversdk.LoginRequest.deserializeBinaryFromReader);
       msg.setLoginrequest(value);
       break;
-    case 5:
+    case 6:
       var value = new proto.serversdk.LoginResponse;
       reader.readMessage(value,proto.serversdk.LoginResponse.deserializeBinaryFromReader);
       msg.setLoginresponse(value);
       break;
-    case 6:
+    case 7:
       var value = new proto.serversdk.LogoutRequest;
       reader.readMessage(value,proto.serversdk.LogoutRequest.deserializeBinaryFromReader);
       msg.setLogoutrequest(value);
       break;
-    case 7:
+    case 8:
       var value = new proto.serversdk.LogoutResponse;
       reader.readMessage(value,proto.serversdk.LogoutResponse.deserializeBinaryFromReader);
       msg.setLogoutresponse(value);
       break;
-    case 8:
+    case 9:
       var value = new proto.serversdk.Notification;
       reader.readMessage(value,proto.serversdk.Notification.deserializeBinaryFromReader);
       msg.setNotification(value);
       break;
-    case 9:
+    case 10:
       var value = new proto.serversdk.HeartbeatRequest;
       reader.readMessage(value,proto.serversdk.HeartbeatRequest.deserializeBinaryFromReader);
       msg.setHeartbeatrequest(value);
       break;
-    case 10:
+    case 11:
       var value = new proto.serversdk.HeartbeatResponse;
       reader.readMessage(value,proto.serversdk.HeartbeatResponse.deserializeBinaryFromReader);
       msg.setHeartbeatresponse(value);
       break;
-    case 11:
+    case 12:
       var value = new proto.serversdk.SendToServer;
       reader.readMessage(value,proto.serversdk.SendToServer.deserializeBinaryFromReader);
       msg.setSendtoserver(value);
       break;
-    case 12:
+    case 13:
       var value = new proto.serversdk.SendToClient;
       reader.readMessage(value,proto.serversdk.SendToClient.deserializeBinaryFromReader);
       msg.setSendtoclient(value);
@@ -1599,24 +1604,31 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  f = /** @type {number} */ (jspb.Message.getField(message, 2));
   if (f != null) {
-    writer.writeString(
+    writer.writeInt32(
       2,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
   if (f != null) {
     writer.writeInt64(
-      3,
+      4,
       f
     );
   }
   f = message.getLoginrequest();
   if (f != null) {
     writer.writeMessage(
-      4,
+      5,
       f,
       proto.serversdk.LoginRequest.serializeBinaryToWriter
     );
@@ -1624,7 +1636,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getLoginresponse();
   if (f != null) {
     writer.writeMessage(
-      5,
+      6,
       f,
       proto.serversdk.LoginResponse.serializeBinaryToWriter
     );
@@ -1632,7 +1644,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getLogoutrequest();
   if (f != null) {
     writer.writeMessage(
-      6,
+      7,
       f,
       proto.serversdk.LogoutRequest.serializeBinaryToWriter
     );
@@ -1640,7 +1652,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getLogoutresponse();
   if (f != null) {
     writer.writeMessage(
-      7,
+      8,
       f,
       proto.serversdk.LogoutResponse.serializeBinaryToWriter
     );
@@ -1648,7 +1660,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getNotification();
   if (f != null) {
     writer.writeMessage(
-      8,
+      9,
       f,
       proto.serversdk.Notification.serializeBinaryToWriter
     );
@@ -1656,7 +1668,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getHeartbeatrequest();
   if (f != null) {
     writer.writeMessage(
-      9,
+      10,
       f,
       proto.serversdk.HeartbeatRequest.serializeBinaryToWriter
     );
@@ -1664,7 +1676,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getHeartbeatresponse();
   if (f != null) {
     writer.writeMessage(
-      10,
+      11,
       f,
       proto.serversdk.HeartbeatResponse.serializeBinaryToWriter
     );
@@ -1672,7 +1684,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getSendtoserver();
   if (f != null) {
     writer.writeMessage(
-      11,
+      12,
       f,
       proto.serversdk.SendToServer.serializeBinaryToWriter
     );
@@ -1680,7 +1692,7 @@ proto.serversdk.GamePkg.serializeBinaryToWriter = function(message, writer) {
   f = message.getSendtoclient();
   if (f != null) {
     writer.writeMessage(
-      12,
+      13,
       f,
       proto.serversdk.SendToClient.serializeBinaryToWriter
     );
@@ -1725,19 +1737,19 @@ proto.serversdk.GamePkg.prototype.hasType = function() {
 
 
 /**
- * required string uid = 2;
- * @return {string}
+ * required int32 appId = 2;
+ * @return {number}
  */
-proto.serversdk.GamePkg.prototype.getUid = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.serversdk.GamePkg.prototype.getAppid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.serversdk.GamePkg} returns this
  */
-proto.serversdk.GamePkg.prototype.setUid = function(value) {
+proto.serversdk.GamePkg.prototype.setAppid = function(value) {
   return jspb.Message.setField(this, 2, value);
 };
 
@@ -1746,7 +1758,7 @@ proto.serversdk.GamePkg.prototype.setUid = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.serversdk.GamePkg} returns this
  */
-proto.serversdk.GamePkg.prototype.clearUid = function() {
+proto.serversdk.GamePkg.prototype.clearAppid = function() {
   return jspb.Message.setField(this, 2, undefined);
 };
 
@@ -1755,25 +1767,25 @@ proto.serversdk.GamePkg.prototype.clearUid = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.serversdk.GamePkg.prototype.hasUid = function() {
+proto.serversdk.GamePkg.prototype.hasAppid = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * required int64 timestamp = 3;
- * @return {number}
+ * required string uid = 3;
+ * @return {string}
  */
-proto.serversdk.GamePkg.prototype.getTimestamp = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.serversdk.GamePkg.prototype.getUid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.serversdk.GamePkg} returns this
  */
-proto.serversdk.GamePkg.prototype.setTimestamp = function(value) {
+proto.serversdk.GamePkg.prototype.setUid = function(value) {
   return jspb.Message.setField(this, 3, value);
 };
 
@@ -1782,7 +1794,7 @@ proto.serversdk.GamePkg.prototype.setTimestamp = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.serversdk.GamePkg} returns this
  */
-proto.serversdk.GamePkg.prototype.clearTimestamp = function() {
+proto.serversdk.GamePkg.prototype.clearUid = function() {
   return jspb.Message.setField(this, 3, undefined);
 };
 
@@ -1791,18 +1803,54 @@ proto.serversdk.GamePkg.prototype.clearTimestamp = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.serversdk.GamePkg.prototype.hasTimestamp = function() {
+proto.serversdk.GamePkg.prototype.hasUid = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
- * optional LoginRequest loginRequest = 4;
+ * required int64 timestamp = 4;
+ * @return {number}
+ */
+proto.serversdk.GamePkg.prototype.getTimestamp = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.serversdk.GamePkg} returns this
+ */
+proto.serversdk.GamePkg.prototype.setTimestamp = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.serversdk.GamePkg} returns this
+ */
+proto.serversdk.GamePkg.prototype.clearTimestamp = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.serversdk.GamePkg.prototype.hasTimestamp = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional LoginRequest loginRequest = 5;
  * @return {?proto.serversdk.LoginRequest}
  */
 proto.serversdk.GamePkg.prototype.getLoginrequest = function() {
   return /** @type{?proto.serversdk.LoginRequest} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.LoginRequest, 4));
+    jspb.Message.getWrapperField(this, proto.serversdk.LoginRequest, 5));
 };
 
 
@@ -1811,7 +1859,7 @@ proto.serversdk.GamePkg.prototype.getLoginrequest = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setLoginrequest = function(value) {
-  return jspb.Message.setWrapperField(this, 4, value);
+  return jspb.Message.setWrapperField(this, 5, value);
 };
 
 
@@ -1829,17 +1877,17 @@ proto.serversdk.GamePkg.prototype.clearLoginrequest = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasLoginrequest = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
 /**
- * optional LoginResponse loginResponse = 5;
+ * optional LoginResponse loginResponse = 6;
  * @return {?proto.serversdk.LoginResponse}
  */
 proto.serversdk.GamePkg.prototype.getLoginresponse = function() {
   return /** @type{?proto.serversdk.LoginResponse} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.LoginResponse, 5));
+    jspb.Message.getWrapperField(this, proto.serversdk.LoginResponse, 6));
 };
 
 
@@ -1848,7 +1896,7 @@ proto.serversdk.GamePkg.prototype.getLoginresponse = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setLoginresponse = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
+  return jspb.Message.setWrapperField(this, 6, value);
 };
 
 
@@ -1866,17 +1914,17 @@ proto.serversdk.GamePkg.prototype.clearLoginresponse = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasLoginresponse = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
 /**
- * optional LogoutRequest logoutRequest = 6;
+ * optional LogoutRequest logoutRequest = 7;
  * @return {?proto.serversdk.LogoutRequest}
  */
 proto.serversdk.GamePkg.prototype.getLogoutrequest = function() {
   return /** @type{?proto.serversdk.LogoutRequest} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.LogoutRequest, 6));
+    jspb.Message.getWrapperField(this, proto.serversdk.LogoutRequest, 7));
 };
 
 
@@ -1885,7 +1933,7 @@ proto.serversdk.GamePkg.prototype.getLogoutrequest = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setLogoutrequest = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
+  return jspb.Message.setWrapperField(this, 7, value);
 };
 
 
@@ -1903,17 +1951,17 @@ proto.serversdk.GamePkg.prototype.clearLogoutrequest = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasLogoutrequest = function() {
-  return jspb.Message.getField(this, 6) != null;
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
 /**
- * optional LogoutResponse logoutResponse = 7;
+ * optional LogoutResponse logoutResponse = 8;
  * @return {?proto.serversdk.LogoutResponse}
  */
 proto.serversdk.GamePkg.prototype.getLogoutresponse = function() {
   return /** @type{?proto.serversdk.LogoutResponse} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.LogoutResponse, 7));
+    jspb.Message.getWrapperField(this, proto.serversdk.LogoutResponse, 8));
 };
 
 
@@ -1922,7 +1970,7 @@ proto.serversdk.GamePkg.prototype.getLogoutresponse = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setLogoutresponse = function(value) {
-  return jspb.Message.setWrapperField(this, 7, value);
+  return jspb.Message.setWrapperField(this, 8, value);
 };
 
 
@@ -1940,17 +1988,17 @@ proto.serversdk.GamePkg.prototype.clearLogoutresponse = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasLogoutresponse = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.getField(this, 8) != null;
 };
 
 
 /**
- * optional Notification notification = 8;
+ * optional Notification notification = 9;
  * @return {?proto.serversdk.Notification}
  */
 proto.serversdk.GamePkg.prototype.getNotification = function() {
   return /** @type{?proto.serversdk.Notification} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.Notification, 8));
+    jspb.Message.getWrapperField(this, proto.serversdk.Notification, 9));
 };
 
 
@@ -1959,7 +2007,7 @@ proto.serversdk.GamePkg.prototype.getNotification = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setNotification = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
+  return jspb.Message.setWrapperField(this, 9, value);
 };
 
 
@@ -1977,17 +2025,17 @@ proto.serversdk.GamePkg.prototype.clearNotification = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasNotification = function() {
-  return jspb.Message.getField(this, 8) != null;
+  return jspb.Message.getField(this, 9) != null;
 };
 
 
 /**
- * optional HeartbeatRequest heartbeatRequest = 9;
+ * optional HeartbeatRequest heartbeatRequest = 10;
  * @return {?proto.serversdk.HeartbeatRequest}
  */
 proto.serversdk.GamePkg.prototype.getHeartbeatrequest = function() {
   return /** @type{?proto.serversdk.HeartbeatRequest} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.HeartbeatRequest, 9));
+    jspb.Message.getWrapperField(this, proto.serversdk.HeartbeatRequest, 10));
 };
 
 
@@ -1996,7 +2044,7 @@ proto.serversdk.GamePkg.prototype.getHeartbeatrequest = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setHeartbeatrequest = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
+  return jspb.Message.setWrapperField(this, 10, value);
 };
 
 
@@ -2014,17 +2062,17 @@ proto.serversdk.GamePkg.prototype.clearHeartbeatrequest = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasHeartbeatrequest = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.getField(this, 10) != null;
 };
 
 
 /**
- * optional HeartbeatResponse heartbeatResponse = 10;
+ * optional HeartbeatResponse heartbeatResponse = 11;
  * @return {?proto.serversdk.HeartbeatResponse}
  */
 proto.serversdk.GamePkg.prototype.getHeartbeatresponse = function() {
   return /** @type{?proto.serversdk.HeartbeatResponse} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.HeartbeatResponse, 10));
+    jspb.Message.getWrapperField(this, proto.serversdk.HeartbeatResponse, 11));
 };
 
 
@@ -2033,7 +2081,7 @@ proto.serversdk.GamePkg.prototype.getHeartbeatresponse = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setHeartbeatresponse = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
+  return jspb.Message.setWrapperField(this, 11, value);
 };
 
 
@@ -2051,17 +2099,17 @@ proto.serversdk.GamePkg.prototype.clearHeartbeatresponse = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasHeartbeatresponse = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.getField(this, 11) != null;
 };
 
 
 /**
- * optional SendToServer sendToServer = 11;
+ * optional SendToServer sendToServer = 12;
  * @return {?proto.serversdk.SendToServer}
  */
 proto.serversdk.GamePkg.prototype.getSendtoserver = function() {
   return /** @type{?proto.serversdk.SendToServer} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.SendToServer, 11));
+    jspb.Message.getWrapperField(this, proto.serversdk.SendToServer, 12));
 };
 
 
@@ -2070,7 +2118,7 @@ proto.serversdk.GamePkg.prototype.getSendtoserver = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setSendtoserver = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
+  return jspb.Message.setWrapperField(this, 12, value);
 };
 
 
@@ -2088,17 +2136,17 @@ proto.serversdk.GamePkg.prototype.clearSendtoserver = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasSendtoserver = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.getField(this, 12) != null;
 };
 
 
 /**
- * optional SendToClient sendToClient = 12;
+ * optional SendToClient sendToClient = 13;
  * @return {?proto.serversdk.SendToClient}
  */
 proto.serversdk.GamePkg.prototype.getSendtoclient = function() {
   return /** @type{?proto.serversdk.SendToClient} */ (
-    jspb.Message.getWrapperField(this, proto.serversdk.SendToClient, 12));
+    jspb.Message.getWrapperField(this, proto.serversdk.SendToClient, 13));
 };
 
 
@@ -2107,7 +2155,7 @@ proto.serversdk.GamePkg.prototype.getSendtoclient = function() {
  * @return {!proto.serversdk.GamePkg} returns this
 */
 proto.serversdk.GamePkg.prototype.setSendtoclient = function(value) {
-  return jspb.Message.setWrapperField(this, 12, value);
+  return jspb.Message.setWrapperField(this, 13, value);
 };
 
 
@@ -2125,7 +2173,7 @@ proto.serversdk.GamePkg.prototype.clearSendtoclient = function() {
  * @return {boolean}
  */
 proto.serversdk.GamePkg.prototype.hasSendtoclient = function() {
-  return jspb.Message.getField(this, 12) != null;
+  return jspb.Message.getField(this, 13) != null;
 };
 
 
